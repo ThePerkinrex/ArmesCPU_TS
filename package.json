@@ -1,0 +1,35 @@
+{
+  "name": "armescpu",
+  "version": "0.0.0",
+  "description": "A cpu emulator",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo null",
+    "start": "echo \"> Starting\" && node .",
+    "prestart": "npm run build",
+    "build": "printf \"> Cleaning up\t\"; true || rm -rf dist/*; printf \"✅\n\"; printf \"> Building\t\"; tsc; printf \"✅\n\"",
+    "lint": "echo \"> Linting\" && eslint 'src/*'"
+  },
+  "keywords": [
+    "cpu",
+    "emulator",
+    "armes"
+
+  ],
+  "author": "ThePerkinrex",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^12.12.5",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "eslint": "^6.6.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  }
+}
