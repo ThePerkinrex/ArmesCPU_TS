@@ -7,19 +7,20 @@
     "test": "echo null",
     "start": "echo \"> Starting\" && node .",
     "prestart": "npm run build",
-    "build": "printf \"> Cleaning up\t\"; true || rm -rf dist/*; printf \"✅\n\"; printf \"> Building\t\"; tsc; printf \"✅\n\"",
-    "lint": "echo \"> Linting\" && eslint 'src/*'"
+    "build": "npm run lint; printf \"> Cleaning up\t\"; true || rm -rf dist/*; printf \"✅\n\"; printf \"> Building\t\"; tsc; printf \"✅\n\"",
+    "lint": "printf \"> Linting\t\"; eslint 'src/*'; printf \"✅\n\"",
+    "lint:fix": "printf \"> Linting & fixing\t\"; eslint 'src/*' --fix; printf \"✅\n\""
   },
   "keywords": [
     "cpu",
     "emulator",
     "armes"
-
   ],
   "author": "ThePerkinrex",
   "license": "MIT",
   "dependencies": {
     "@types/node": "^12.12.5",
+    "source-map-support": "^0.5.16",
     "typescript": "^3.7.2"
   },
   "devDependencies": {

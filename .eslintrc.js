@@ -19,10 +19,11 @@ module.exports = {
 	],
 	rules: {
 		'@typescript-eslint/no-explicit-any': ['off'],
-		'@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
+		'@typescript-eslint/explicit-function-return-type': ['off'],
 		'arrow-parens': ['error', 'as-needed'],
 		'indent': ['error', 'tab'],
 		'no-tabs': ['error', { allowIndentationTabs: true }],
-		'semi': ['error', 'never']
+		'semi': ['error', 'never'],
+		'prefer-const': ['off']
 	}
 }
