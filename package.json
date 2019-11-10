@@ -1,7 +1,7 @@
 {
   "name": "armescpu",
   "version": "0.0.0",
-  "description": "A cpu emulator",
+  "description": "A cpu emulator written in TS",
   "main": "dist/main.js",
   "scripts": {
     "test": "echo null",
