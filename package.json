@@ -11,7 +11,14 @@
     "lint": "printf \"> Linting\t\"; eslint 'src/*'; printf \"✅\n\"",
     "lint:fix": "printf \"> Linting & fixing\t\"; eslint 'src/*' --fix; printf \"✅\n\"",
     "build:rom": "npm run build && echo \"> Starting rom creation tool\" && node dist/rom.js",
-    "build:ram": "npm run build && echo \"> Starting ram creation tool\" && node dist/ram.js"
+    "build:ram": "npm run build && echo \"> Starting ram creation tool\" && node dist/ram.js",
+
+    "start:simple": "node .",
+    "build:simple": "tsc",
+    "build:ram:simple": "npm run build:simple && node dist/ram.js",
+    "build:rom:simple": "npm run build:simple && node dist/rom.js",
+    "lint:simple": "eslint 'src/*'",
+    "lint:fix:simple": "eslint 'src/*' --fix"
   },
   "keywords": [
     "cpu",
