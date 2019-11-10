@@ -2,14 +2,16 @@ import * as bytes from '../@types/bytes'
 import { AddressableComponent } from './addressSelector'
 
 export class IO implements AddressableComponent {
-	private data: Uint8Array
+	protected data: Uint8Array
+	protected addressBits: number
 
-	private isAddressCorrect(address: number) {
+	protected isAddressCorrect(address: number) {
 		bytes.numberTypeGuard(address, this.data.byteLength - 1, 0, 'Address')
 	}
 
 	constructor(addressBits: number) {
 		this.data = new Uint8Array(Math.pow(2, addressBits))
+		this.addressBits = addressBits
 	}
 
 	set(address: number, data: number) {
@@ -21,6 +23,13 @@ export class IO implements AddressableComponent {
 	get(address: number): number {
 		this.isAddressCorrect(address)
 		return this.data[address]
+	}
+}
+
+export class ConsoleIO extends IO {
+	set(address: number, data: number) {
+		super.set(address, data)
+		console.log(`OUT[${address.toString(16).toUpperCase().padStart((Math.pow(2, this.addressBits)-1).toString(16).length, '0')}]: ${data.toString(16).toUpperCase().padStart(2, '0')} | ${String.fromCharCode(data)}`)
 	}
 }
 
