@@ -38,7 +38,7 @@ export class AddressSelector implements AddressableComponent {
 				return
 			}
 		}
-		console.log('Address isnt matchable')
+		console.log('Address isnt matchable', address.toString(16))
 	}
 	
 	get(address: number): number {
@@ -47,7 +47,8 @@ export class AddressSelector implements AddressableComponent {
 				return component.addressableComponent.get(address - component.startAdressSpace)
 			}
 		}
-		console.log('Address isnt matchable')
+		console.log('Address isnt matchable', address.toString(16))
+		throw new Error()
 		return 0
 	}
 
@@ -116,10 +117,12 @@ export class Bus_AddressSelector_Interface {
 			}
 
 			getVal(): number {
+				//console.log(this.calcAddress().toString(16).padStart(4,'0'),'get', t.addressSelector.get(this.calcAddress()).toString(16).padStart(2,'0'))
 				return t.addressSelector.get(this.calcAddress())
 			}
 	
 			setVal(n: number) {
+				//console.log(this.calcAddress().toString(16).padStart(4,'0'),'set', t.addressSelector.get(this.calcAddress()).toString(16).padStart(2,'0'), '->', n.toString(16).padStart(2,'0'))
 				t.addressSelector.set(this.calcAddress(), n)
 			}
 		})()

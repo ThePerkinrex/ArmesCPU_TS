@@ -29,7 +29,7 @@ export class Bus {
 				this.val |= conn.getVal()
 			}
 		}
-
+		// console.log('#',this.val.toString(16).padEnd(2,'0'))
 		for(let conn of this.connections) {
 			if(conn.isFromBus()) {
 				conn.setVal(this.val)

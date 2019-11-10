@@ -1,6 +1,6 @@
 export const INST_LENGHT = 8
-export const MINST_COUNTER_LENGTH = 4
-export const MINST_LENGTH = 16
+export const MINST_COUNTER_LENGTH = 5
+export const MINST_LENGTH = 24
 
 // INSTRUCTION (8bits) MINST_COUNTER (4bits)
 // 12 bits total
@@ -13,7 +13,7 @@ MOV		0x02
 LDA		0x03
 STA		0x04
 */
-//MICRO INSTRUTIONS (MINST) (2 bytes for now)
+//MICRO INSTRUTIONS (MINST) (24bit)
 /*
 0 -  HLT Halt
 
@@ -34,8 +34,12 @@ STA		0x04
 12 - ADD Add the bus with the accumulator
 
 13 - IRI Instruction register in
-14 - REI
-15 - REO
+
+14 - R1I Register 1 In
+15 - R1O Register 1 Out
+
+16 - R2I Register 2 In
+17 - R2O Register 2 Out
 */
 
 
@@ -59,8 +63,11 @@ export const ADD = 1 << 12
 
 export const IRI = 1 << 13
 
-export const REI = 1 << 14
-export const REO = 1 << 15
+export const R1I = 1 << 14
+export const R1O = 1 << 15
+
+export const R2I = 1 << 16
+export const R2O = 1 << 17
 
 export type Microcode = number[]
 
@@ -91,9 +98,25 @@ export const inst: Instructions = {
 	MOV: {
 		code: 0x02,
 		microcode: LOADER.concat([
-			ICO1 | A1I,
+			// ICO1 | A1I, // Get next value
+			// ICO2 | A2I,
+			DAO | R1I /*| ICA*/, // Store it in the register
+			ICO1 | A1I, // Get next value
 			ICO2 | A2I,
-			DAO | REI
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+
+			DAO | R2I, // save value to register 2
+
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | R1I | ICA, // Store it in the register
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+
+			DAI | R2O
 		])
 	}
 }
