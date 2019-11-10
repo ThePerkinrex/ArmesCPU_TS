@@ -36,7 +36,6 @@ rom.hexdump()
 let addressSelector = new AddressSelector(16)
 
 addressSelector.addComponent(0x0000, 0x7FFF, ram)
-
 addressSelector.addComponent(0x8010, 0x801F, io)
 
 let addressSelectorInterface = new Bus_AddressSelector_Interface(addressSelector)
