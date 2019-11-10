@@ -78,3 +78,22 @@ export const LOADER: Microcode = [
 	ICO2 | A2I,
 	ICA | DAO | IRI
 ]
+
+export const inst: Instructions = {
+	NOP: {
+		code: 0x00,
+		microcode: LOADER
+	},
+	HALT: {
+		code: 0xFF,
+		microcode: LOADER.concat([HLT])
+	},
+	MOV: {
+		code: 0x02,
+		microcode: LOADER.concat([
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | REI
+		])
+	}
+}

@@ -1,4 +1,4 @@
-import { IMemory } from './@types/memory'
+import { IMemory } from '../components/memory'
 import { writeFileSync } from 'fs'
 
 export function createBinFile (mem: IMemory, name: string) {

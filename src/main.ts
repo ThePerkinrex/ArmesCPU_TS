@@ -1,15 +1,20 @@
 import 'source-map-support/register'
 
-import { Memory } from './@types/memory'
-import { createBinFile } from './bin'
+import { Memory, CustomMemory } from './components/memory'
+import { IO } from './components/io'
+import { readFileSync } from 'fs'
+import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT } from './@types/instructions'
 
-console.log("I'm alive")
 
-let ram = new Memory(15) // first bit to select ram or another thing
-for (let i = 0x00; i < 0x8000; i++) {
-	ram.set(i, 0xff)
-}
+
+let ram = new Memory(15, readFileSync('data/ram.bin')) // 32kB - 0x0000 - 0x7FFF
+let rom = new CustomMemory(MINST_COUNTER_LENGTH + INST_LENGHT, MINST_LENGTH, readFileSync('data/rom.bin'))
+
+let io = new IO(4) // 16B - 0x8010 - 0x801F
 
 ram.hexdump()
+rom.hexdump()
 
-createBinFile(ram, 'ram')
+
+
+

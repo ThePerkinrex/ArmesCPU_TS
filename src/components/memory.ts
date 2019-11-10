@@ -1,6 +1,7 @@
-import * as bytes from './bytes'
+import * as bytes from '../@types/bytes'
+import { AddressableComponent } from './addressSelector'
 
-export interface IMemory {
+export interface IMemory extends AddressableComponent {
 	get(address: number): number,
 	set(address: number, data: number): void,
 	hexdump(): void,
@@ -13,8 +14,11 @@ export class Memory implements IMemory {
 		bytes.numberTypeGuard(address, this.data.byteLength - 1, 0, 'Address')
 	}
 
-	constructor(addressBits: number) {
+	constructor(addressBits: number, buffer?: Buffer) {
 		this.data = new Uint8Array(Math.pow(2, addressBits))
+		if (buffer !== undefined) {
+			this.data = new Uint8Array(buffer)
+		}
 	}
 
 	get(address: number): number {
@@ -79,9 +83,26 @@ export class CustomMemory implements IMemory {
 		bytes.numberTypeGuard(data, Math.pow(2, this.dataBits), 0, 'Data')
 	}
 
-	constructor(addressBits: number, dataBits: number) {
+	constructor(addressBits: number, dataBits: number, buffer?: Buffer) {
+		if (dataBits / 8 !== Math.floor(dataBits / 8)) {
+			throw RangeError('dataBits must a multiple of 8')
+		}
 		this.dataBits = dataBits
 		this.data = Array.apply(null, Array<number>(Math.pow(2, addressBits))).map(function () { return 0 })
+		if (buffer !== undefined) {
+			let newAddress = 0
+			for (let address = 0; address < buffer.length; newAddress++) {
+				let n = 0
+				// convert the data from bytes
+				for (let i = (dataBits / 8) - 1; i >= 0; i--) {
+					n += buffer[address] * Math.pow(0x100, i)
+					//console.log('#', i, newAddress.toString(16), buffer[address].toString(16), n.toString(16))
+					address++
+				}
+				this.data[newAddress] = n
+				//console.log(newAddress.toString(16), n.toString(16))
+			}
+		}
 	}
 
 	get(address: number): number {
@@ -130,6 +151,15 @@ export class CustomMemory implements IMemory {
 	}
 
 	buffer(): Buffer {
-		return Buffer.from(this.data)
+		let buffer = Buffer.alloc(this.data.length * this.dataBits / 8)
+		let bufferAddress = 0x00
+		for (let address = 0; address < this.data.length; address++) {
+			// split the data into bytes
+			for (let i = (this.dataBits / 8) - 1; i >= 0; i--) {
+				buffer[bufferAddress] = (this.data[address] & (0xFF * Math.pow(0x100, i))) >> (8*i)
+				bufferAddress++
+			}
+		}
+		return buffer
 	}
 }
