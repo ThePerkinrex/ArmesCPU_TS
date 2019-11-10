@@ -23,3 +23,4 @@ export class IO implements AddressableComponent {
 		return this.data[address]
 	}
 }
+
