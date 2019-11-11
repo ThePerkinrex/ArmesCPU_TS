@@ -1,5 +1,5 @@
 import { BusIOInterface } from './bus'
-import { DEBUG } from '../main'
+import { DEBUG } from '../cpu'
 
 export class BusRegister implements BusIOInterface {
 	private ontoBusBool: boolean = false
