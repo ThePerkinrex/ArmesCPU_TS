@@ -1,4 +1,5 @@
 import { BusIOInterface } from './bus'
+import { DEBUG } from '../main'
 
 export class BusRegister implements BusIOInterface {
 	private ontoBusBool: boolean = false
@@ -6,12 +7,12 @@ export class BusRegister implements BusIOInterface {
 	private val: number = 0
 
 	getVal(): number {
-		//console.log('rget', this.val.toString(16).padStart(2,'0'))
+		if (DEBUG) console.log('rget', this.val.toString(16).padStart(2,'0'))
 		return this.val
 	}
 
 	setVal(n: number) {
-		//console.log('rset', this.val.toString(16).padStart(2,'0'), '->', n.toString(16).padStart(2,'0'))
+		if (DEBUG) console.log('rset', this.val.toString(16).padStart(2,'0'), '->', n.toString(16).padStart(2,'0'))
 		this.val = n
 	}
 

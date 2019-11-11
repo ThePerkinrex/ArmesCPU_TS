@@ -29,7 +29,7 @@ export class IO implements AddressableComponent {
 export class ConsoleIO extends IO {
 	set(address: number, data: number) {
 		super.set(address, data)
-		console.log(`OUT[${address.toString(16).toUpperCase().padStart((Math.pow(2, this.addressBits)-1).toString(16).length, '0')}]: ${data.toString(16).toUpperCase().padStart(2, '0')} | ${String.fromCharCode(data)}`)
+		console.log(`OUT[${address.toString(16).toUpperCase().padStart((Math.pow(2, this.addressBits)-1).toString(16).length, '0')}]: ${data.toString(16).toUpperCase().padStart(2, '0')} | ${data.toString(10).padStart((Math.pow(2, this.addressBits)-1).toString(10).length, '0')} | ${String.fromCharCode(data)}`)
 	}
 }
 

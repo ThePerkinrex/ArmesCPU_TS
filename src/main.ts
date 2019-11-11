@@ -3,15 +3,16 @@ import 'source-map-support/register'
 import { Memory, CustomMemory } from './components/memory'
 import { ConsoleIO } from './components/io'
 import { readFileSync } from 'fs'
-import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O } from './@types/instructions'
+import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD } from './@types/instructions'
 import { AddressSelector, Bus_AddressSelector_Interface } from './components/addressSelector' // eslint-disable-line @typescript-eslint/camelcase
 import { Bus } from './components/bus'
 import { BusRegister } from './components/busRegister'
 import { InstructionCounter, Bus_InstructionCounter_Interface } from './components/instructionCounter' // eslint-disable-line @typescript-eslint/camelcase
+import { ALU } from './components/alu'
 
 // BIG ENDIAN SYSTEM
 
-const DEBUG = false
+export const DEBUG = false
 
 /* Address sections (16bit/2Byte address)
 * 0x0000 - 0x7FFF: 32kB - RAM
@@ -54,6 +55,9 @@ let instructionCounterInterface = new Bus_InstructionCounter_Interface(instructi
 let instructionRegister = new BusRegister()
 let privateRegister1 = new BusRegister()
 let privateRegister2 = new BusRegister()
+let accumulator = new BusRegister()
+
+let alu = new ALU(accumulator)
 
 let bus = new Bus()
 
@@ -69,11 +73,13 @@ bus.addBusIO(instructionRegister)
 bus.addBusIO(privateRegister1)
 bus.addBusIO(privateRegister2)
 
+bus.addBusIO(accumulator)
+bus.addBusIO(alu)
+
 let haltFlag = false
 
 // #region Microinstructions
 /* eslint-disable @typescript-eslint/camelcase */
-// TODO: ACI, ACO, ADD
 
 function f_ICO1 () {
 	instructionCounterInterface.counter1Interface.ontoBus()
@@ -135,11 +141,24 @@ function f_HLT () {
 	haltFlag = true
 }
 
+function f_ACI() {
+	accumulator.fromBus()
+}
+
+function f_ACO() {
+	accumulator.ontoBus()
+}
+
+function f_ADD() {
+	alu.add()
+}
+
 /* eslint-enable @typescript-eslint/camelcase */
 // #endregion Microinstructions
 // let j = 0
 
 // TODO make this like a library, so that it can be used on web as well as on node
+// For that add callbacks
 
 while (!haltFlag) {
 	// Read instruction -> go trough microinstructions -> start over
@@ -214,6 +233,19 @@ while (!haltFlag) {
 		if ((romVal & R2O) !== 0) {
 			f_R2O()
 			mcodes += 'R2O '
+		}
+
+		if ((romVal & ACI) !== 0) {
+			f_ACI()
+			mcodes += 'ACI '
+		}
+		if ((romVal & ACO) !== 0) {
+			f_ACO()
+			mcodes += 'ACO '
+		}
+		if ((romVal & ADD) !== 0) {
+			f_ADD()
+			mcodes += 'ADD '
 		}
 		if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
 		bus.cycle()

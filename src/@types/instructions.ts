@@ -98,13 +98,13 @@ export const inst: Instructions = {
 	MOV: {
 		code: 0x02,
 		microcode: LOADER.concat([
-			// ICO1 | A1I, // Get next value
-			// ICO2 | A2I,
-			DAO | R1I /*| ICA*/, // Store it in the register
+			// Get argument routine
+			DAO | R1I, // Get next value (Instruction counter already advanced & ram address saved) & store it in the register
 			ICO1 | A1I, // Get next value
 			ICO2 | A2I,
 			DAO | A2I | ICA, // Set address 2
 			R1O | A1I, // set register to address 1
+			// End routine
 
 			DAO | R2I, // save value to register 2
 
@@ -116,7 +116,68 @@ export const inst: Instructions = {
 			DAO | A2I | ICA, // Set address 2
 			R1O | A1I, // set register to address 1
 
-			DAI | R2O
+			DAI | R2O,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		])
+	},
+	ADD: {
+		code: 0x01,
+		microcode: LOADER.concat([
+			// Get argument routine
+			DAO | R1I, // Get next value (Instruction counter already advanced & ram address saved) & store it in the register
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+			// End routine
+			DAO | ADD,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		])
+	},
+	LDA: {
+		code: 0x03,
+		microcode: LOADER.concat([
+			// Get argument routine
+			DAO | R1I, // Get next value (Instruction counter already advanced & ram address saved) & store it in the register
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+			// End routine
+
+			DAO | ACI,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		])
+	},
+	STA: {
+		code: 0x04,
+		microcode: LOADER.concat([
+			// Get argument routine
+			DAO | R1I, // Get next value (Instruction counter already advanced & ram address saved) & store it in the register
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+			// End routine
+
+			DAI | ACO,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
 		])
 	}
 }
