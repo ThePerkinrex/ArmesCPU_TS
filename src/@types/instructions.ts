@@ -12,6 +12,7 @@ ADD		0x01
 MOV		0x02
 LDA		0x03
 STA		0x04
+JMP		0x05
 */
 //MICRO INSTRUTIONS (MINST) (24bit)
 /*
@@ -173,6 +174,20 @@ export const inst: Instructions = {
 			// End routine
 
 			DAI | ACO,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		])
+	},
+	JMP: {
+		code: 0x05,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
 
 			// Setup for next instrcution
 			ICO1 | A1I,

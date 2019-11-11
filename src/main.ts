@@ -141,15 +141,15 @@ function f_HLT () {
 	haltFlag = true
 }
 
-function f_ACI() {
+function f_ACI () {
 	accumulator.fromBus()
 }
 
-function f_ACO() {
+function f_ACO () {
 	accumulator.ontoBus()
 }
 
-function f_ADD() {
+function f_ADD () {
 	alu.add()
 }
 
