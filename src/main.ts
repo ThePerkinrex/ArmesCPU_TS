@@ -139,6 +139,8 @@ function f_HLT () {
 // #endregion Microinstructions
 // let j = 0
 
+// TODO make this like a library, so that it can be used on web as well as on node
+
 while (!haltFlag) {
 	// Read instruction -> go trough microinstructions -> start over
 	let instruction = instructionRegister.getVal()
