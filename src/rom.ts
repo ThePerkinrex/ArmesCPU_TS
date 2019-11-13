@@ -5,7 +5,7 @@ import { createBinFile } from './utils/bin'
 
 import { MINST_COUNTER_LENGTH, INST_LENGHT, MINST_LENGTH, Instructions, inst } from './@types/instructions' // eslint-disable-line import/no-duplicates
 
-console.log('\n> Building RAM...')
+console.log('\n> Building ROM...')
 
 function createROM (inst: Instructions): CustomMemory {
 	// Each ROM stores a byte for each address
