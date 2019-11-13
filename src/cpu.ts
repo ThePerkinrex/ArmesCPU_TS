@@ -54,7 +54,7 @@ export class CPU {
 
 	private bus = new Bus()
 
-	constructor(ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
+	constructor (ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
 		this.ram = new Memory(15, ram) // 32kB - 0x0000 - 0x7FFF
 		this.rom = new CustomMemory(MINST_COUNTER_LENGTH + INST_LENGHT + FLAGS_LENGTH, MINST_LENGTH, rom)
 
@@ -84,82 +84,82 @@ export class CPU {
 	// #region Microinstructions
 	/* eslint-disable @typescript-eslint/camelcase */
 
-	private ICO1() {
+	private ICO1 () {
 		this.instructionCounterInterface.counter1Interface.ontoBus()
 	}
 
-	private ICO2() {
+	private ICO2 () {
 		this.instructionCounterInterface.counter2Interface.ontoBus()
 	}
 
-	private ICI1() {
+	private ICI1 () {
 		this.instructionCounterInterface.counter1Interface.fromBus()
 	}
 
-	private ICI2() {
+	private ICI2 () {
 		this.instructionCounterInterface.counter2Interface.fromBus()
 	}
 
-	private ICA() {
+	private ICA () {
 		this.instructionCounter.add()
 	}
 
-	private A1I() {
+	private A1I () {
 		this.addressSelectorInterface.address1Interface.fromBus()
 	}
 
-	private A2I() {
+	private A2I () {
 		this.addressSelectorInterface.address2Interface.fromBus()
 	}
 
-	private DAI() {
+	private DAI () {
 		this.addressSelectorInterface.dataInterface.fromBus()
 	}
 
-	private DAO() {
+	private DAO () {
 		this.addressSelectorInterface.dataInterface.ontoBus()
 	}
 
-	private IRI() {
+	private IRI () {
 		this.instructionRegister.fromBus()
 	}
 
-	private R1I() {
+	private R1I () {
 		this.privateRegister1.fromBus()
 	}
 
-	private R1O() {
+	private R1O () {
 		this.privateRegister1.ontoBus()
 	}
 
-	private R2I() {
+	private R2I () {
 		this.privateRegister2.fromBus()
 	}
 
-	private R2O() {
+	private R2O () {
 		this.privateRegister2.ontoBus()
 	}
 
-	private HLT() {
+	private HLT () {
 		this.haltFlag = true
 	}
 
-	private ACI() {
+	private ACI () {
 		this.accumulator.fromBus()
 	}
 
-	private ACO() {
+	private ACO () {
 		this.accumulator.ontoBus()
 	}
 
-	private ADD() {
+	private ADD () {
 		this.alu.add()
 	}
 
 	/* eslint-enable @typescript-eslint/camelcase */
 	// #endregion Microinstructions
 
-	public async run() {
+	public async run () {
 		try {
 			while (!this.haltFlag) {
 				// Read instruction -> go trough microinstructions -> start over
@@ -170,7 +170,7 @@ export class CPU {
 					let romVal = this.rom.get(romAddress)
 					if (romVal === 0) break // break out of the loop if no microcode
 					let mcodes = ''
-					//#region Check microinstructions
+					// #region Check microinstructions
 					if ((romVal & HLT) !== 0) {
 						this.HLT()
 						mcodes += 'HLT '
@@ -249,7 +249,7 @@ export class CPU {
 						this.ADD()
 						mcodes += 'ADD '
 					}
-					//#endregion Check microinstructions
+					// #endregion Check microinstructions
 					if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
 					this.bus.cycle()
 				}
@@ -257,7 +257,7 @@ export class CPU {
 				this.flags.cycle()
 			}
 		} catch (e) {
-			console.error('\x1b[31mCPU Error:',e,'\x1b[0m')
+			console.error('\x1b[31mCPU Error:', e, '\x1b[0m')
 		}
 	}
 }

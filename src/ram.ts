@@ -57,7 +57,7 @@ let code: {[address: number]: number} = {
 	0x0016: 0x03, // @loop
 	0x0017: i.HALT.code, // :halt
 	0x7FFE: 1, // #x
-	0x7FFF: 0  // #y
+	0x7FFF: 0 // #y
 }
 
 // TODO: write real compiler
