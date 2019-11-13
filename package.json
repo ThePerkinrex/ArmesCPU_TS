@@ -4,21 +4,14 @@
   "description": "A cpu emulator written in TS",
   "main": "dist/node.js",
   "scripts": {
-    "test": "echo null",
-    "start": "echo \"> Starting\" && node .",
+    "start": "node .",
     "prestart": "npm run build",
-    "build": "npm run lint; printf \"> Cleaning up\t\"; true || rm -rf dist/*; printf \"✅\n\"; printf \"> Building\t\"; tsc; printf \"✅\n\"",
-    "lint": "printf \"> Linting\t\"; eslint 'src/*'; printf \"✅\n\"",
-    "lint:fix": "printf \"> Linting & fixing\t\"; eslint 'src/*' --fix; printf \"✅\n\"",
-    "build:rom": "npm run build && echo \"> Starting rom creation tool\" && node dist/rom.js",
-    "build:ram": "npm run build && echo \"> Starting ram creation tool\" && node dist/ram.js",
-
-    "start:simple": "node .",
-    "build:simple": "tsc",
-    "build:ram:simple": "npm run build:simple && node dist/ram.js",
-    "build:rom:simple": "npm run build:simple && node dist/rom.js",
-    "lint:simple": "eslint 'src/*'",
-    "lint:fix:simple": "eslint 'src/*' --fix"
+    "build": "ts-node scripts/build.ts",
+    "build:rom": "npm run build && node dist/rom.js",
+    "build:ram": "npm run build && node dist/ram.js",
+    "lint": "ts-node scripts/lint.ts 'src/*'",
+    "lint:fix": "ts-node scripts/lint.ts --fix 'src/*'",
+    "test": "npm run build && npm run lint"
   },
   "keywords": [
     "cpu",
@@ -40,6 +33,7 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "ts-node": "^8.5.0"
   }
 }
