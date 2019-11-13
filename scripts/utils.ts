@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import * as readline from 'readline'
 
 export function isEmpty (str: string): boolean {
 	return /^(?:\x1b\[\d+m\s*)*$/.test(str) // Matches an empty string, including empty ANSI escape codes
@@ -44,8 +45,8 @@ export class Logger {
 	}
 
 	end (error?: boolean, info?: string) {
-		process.stdout.moveCursor(-3, 0) // Move cursor 3px to the left
-		process.stdout.clearLine(1) // Clear everything in front of the cursor
+		readline.moveCursor(process.stdout, -3, 0) // Move cursor 3px to the left
+		readline.clearLine(process.stdout, 1) // Clear everything in front of the cursor
 		this.log(error ? colors.red(' ✘\n') : colors.green(' ✔\n'))
 		if (info) this.info(info)
 	}
