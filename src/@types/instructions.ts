@@ -1,8 +1,22 @@
+import { FlagsRegister } from '../components/flagsRegister'
+
 export const INST_LENGHT = 8
 export const MINST_COUNTER_LENGTH = 5
+export const FLAGS_LENGTH = FlagsRegister.flagNumber
 export const MINST_LENGTH = 24
 
-// INSTRUCTION (8bits) MINST_COUNTER (4bits)
+
+// INSTRUCTION (8bits) MINST_COUNTER (4bits) FLAGS (6bits)
+/*
+flags:
+ - EQ Equals
+ - GT Greater than
+ - ST Smaller than
+ - OF Overflow
+ - UF Undeflow
+ - ZE Zero
+*/
+
 // 12 bits total
 
 /*
@@ -13,6 +27,7 @@ MOV		0x02
 LDA		0x03
 STA		0x04
 JMP		0x05
+JOF		0x06
 */
 //MICRO INSTRUTIONS (MINST) (24bit)
 /*
@@ -74,7 +89,9 @@ export type Microcode = number[]
 
 export interface Instruction {
 	code: number,
-	microcode: Microcode
+	microcode: Microcode,
+	flags?: number[],
+	bytesUsedByInstruction?: number
 }
 
 export interface Instructions {
@@ -86,6 +103,11 @@ export const LOADER: Microcode = [
 	ICO2 | A2I,
 	ICA | DAO | IRI
 ]
+
+export function createIgnoreMicrocode(bytes: number): Microcode {
+	let arr = Array(bytes).fill(ICA)
+	return arr.concat(LOADER)
+}
 
 export const inst: Instructions = {
 	NOP: {
@@ -194,5 +216,21 @@ export const inst: Instructions = {
 			ICO2 | A2I,
 			ICA | DAO | IRI
 		])
+	},
+	JOF: {
+		code: 0x06,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.OF],
+		bytesUsedByInstruction: 2
 	}
 }

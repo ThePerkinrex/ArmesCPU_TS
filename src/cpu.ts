@@ -1,11 +1,12 @@
 import { Memory, CustomMemory } from './components/memory'
 import { ConsoleIO, IO } from './components/io'
-import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD } from './@types/instructions'
+import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD, FLAGS_LENGTH } from './@types/instructions'
 import { AddressSelector, Bus_AddressSelector_Interface } from './components/addressSelector' // eslint-disable-line @typescript-eslint/camelcase
 import { Bus } from './components/bus'
 import { BusRegister } from './components/busRegister'
 import { InstructionCounter, Bus_InstructionCounter_Interface } from './components/instructionCounter' // eslint-disable-line @typescript-eslint/camelcase
 import { ALU } from './components/alu'
+import { FlagsRegister } from './components/flagsRegister'
 
 // BIG ENDIAN SYSTEM
 
@@ -35,7 +36,7 @@ export class CPU {
 
 	private io: IO // 16B - 0x8010 - 0x801F
 
-	private addressSelector = new AddressSelector(16)
+	public addressSelector = new AddressSelector(16)
 
 	private addressSelectorInterface = new Bus_AddressSelector_Interface(this.addressSelector)
 
@@ -47,13 +48,15 @@ export class CPU {
 	private privateRegister2 = new BusRegister()
 	private accumulator = new BusRegister()
 
-	private alu = new ALU(this.accumulator)
+	private flags = new FlagsRegister()
+
+	private alu = new ALU(this.accumulator, this.flags)
 
 	private bus = new Bus()
 
 	constructor(ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
 		this.ram = new Memory(15, ram) // 32kB - 0x0000 - 0x7FFF
-		this.rom = new CustomMemory(MINST_COUNTER_LENGTH + INST_LENGHT, MINST_LENGTH, rom)
+		this.rom = new CustomMemory(MINST_COUNTER_LENGTH + INST_LENGHT + FLAGS_LENGTH, MINST_LENGTH, rom)
 
 		this.io = io
 
@@ -156,14 +159,14 @@ export class CPU {
 	/* eslint-enable @typescript-eslint/camelcase */
 	// #endregion Microinstructions
 
-	async run() {
+	public async run() {
 		try {
 			while (!this.haltFlag) {
 				// Read instruction -> go trough microinstructions -> start over
 				let instruction = this.instructionRegister.getVal()
 				if (DEBUG) console.log('#', this.instructionCounter.counter.toString(16).padStart(4, '0'), instruction.toString(16).padStart(2, '0'))
 				for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
-					let romAddress = (instruction << MINST_COUNTER_LENGTH) + i
+					let romAddress = (((instruction << MINST_COUNTER_LENGTH) + i) << FLAGS_LENGTH) + this.flags.getVal()
 					let romVal = this.rom.get(romAddress)
 					if (romVal === 0) break // break out of the loop if no microcode
 					let mcodes = ''
@@ -250,6 +253,8 @@ export class CPU {
 					if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
 					this.bus.cycle()
 				}
+				// console.log(this.flags.getVal().toString(2))
+				this.flags.cycle()
 			}
 		} catch (e) {
 			console.error('\x1b[31mCPU Error:',e,'\x1b[0m')

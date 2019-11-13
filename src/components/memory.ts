@@ -88,7 +88,7 @@ export class CustomMemory implements IMemory {
 			throw RangeError('dataBits must a multiple of 8')
 		}
 		this.dataBits = dataBits
-		this.data = Array.apply(null, Array<number>(Math.pow(2, addressBits))).map(function () { return 0 })
+		this.data = Array<number>(Math.pow(2, addressBits)).fill(0)
 		if (buffer !== undefined) {
 			let newAddress = 0
 			for (let address = 0; address < buffer.length; newAddress++) {
@@ -118,7 +118,7 @@ export class CustomMemory implements IMemory {
 
 	hexdump() {
 		const columns = 16
-		let lastRow = Array.apply(null, Array(columns)).map(function () { })
+		let lastRow = Array(columns)
 		let lastEqualRows = false
 		for (let address = 0; address < this.data.length; address += columns) {
 			let end = Math.min(address + columns - 1, this.data.length - 1)
