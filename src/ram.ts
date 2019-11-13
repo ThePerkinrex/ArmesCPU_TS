@@ -4,6 +4,8 @@ import { Memory } from './components/memory'
 import { createBinFile } from './utils/bin'
 import { inst as i } from './@types/instructions'
 
+console.log('\n> Building RAM...')
+
 let ram = new Memory(15) // first bit to select ram or another thing
 for (let idx = 0x00; idx < 0x8000; idx++) { // Empty it
 	ram.set(idx, i.NOP.code)

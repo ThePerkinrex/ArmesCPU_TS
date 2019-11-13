@@ -51,7 +51,6 @@ export class CPU {
 
 	private bus = new Bus()
 
-
 	constructor (ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
 		this.ram = new Memory(15, ram) // 32kB - 0x0000 - 0x7FFF
 		this.rom = new CustomMemory(MINST_COUNTER_LENGTH + INST_LENGHT, MINST_LENGTH, rom)
