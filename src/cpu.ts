@@ -51,7 +51,7 @@ export class CPU {
 
 	private bus = new Bus()
 
-	constructor (ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
+	constructor(ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
 		this.ram = new Memory(15, ram) // 32kB - 0x0000 - 0x7FFF
 		this.rom = new CustomMemory(MINST_COUNTER_LENGTH + INST_LENGHT, MINST_LENGTH, rom)
 
@@ -81,177 +81,178 @@ export class CPU {
 	// #region Microinstructions
 	/* eslint-disable @typescript-eslint/camelcase */
 
-	private ICO1 () {
+	private ICO1() {
 		this.instructionCounterInterface.counter1Interface.ontoBus()
 	}
 
-	private ICO2 () {
+	private ICO2() {
 		this.instructionCounterInterface.counter2Interface.ontoBus()
 	}
 
-	private ICI1 () {
+	private ICI1() {
 		this.instructionCounterInterface.counter1Interface.fromBus()
 	}
 
-	private ICI2 () {
+	private ICI2() {
 		this.instructionCounterInterface.counter2Interface.fromBus()
 	}
 
-	private ICA () {
+	private ICA() {
 		this.instructionCounter.add()
 	}
 
-	private A1I () {
+	private A1I() {
 		this.addressSelectorInterface.address1Interface.fromBus()
 	}
 
-	private A2I () {
+	private A2I() {
 		this.addressSelectorInterface.address2Interface.fromBus()
 	}
 
-	private DAI () {
+	private DAI() {
 		this.addressSelectorInterface.dataInterface.fromBus()
 	}
 
-	private DAO () {
+	private DAO() {
 		this.addressSelectorInterface.dataInterface.ontoBus()
 	}
 
-	private IRI () {
+	private IRI() {
 		this.instructionRegister.fromBus()
 	}
 
-	private R1I () {
+	private R1I() {
 		this.privateRegister1.fromBus()
 	}
 
-	private R1O () {
+	private R1O() {
 		this.privateRegister1.ontoBus()
 	}
 
-	private R2I () {
+	private R2I() {
 		this.privateRegister2.fromBus()
 	}
 
-	private R2O () {
+	private R2O() {
 		this.privateRegister2.ontoBus()
 	}
 
-	private HLT () {
+	private HLT() {
 		this.haltFlag = true
 	}
 
-	private ACI () {
+	private ACI() {
 		this.accumulator.fromBus()
 	}
 
-	private ACO () {
+	private ACO() {
 		this.accumulator.ontoBus()
 	}
 
-	private ADD () {
+	private ADD() {
 		this.alu.add()
 	}
 
 	/* eslint-enable @typescript-eslint/camelcase */
 	// #endregion Microinstructions
 
-	async run () {
-		while (!this.haltFlag) {
-			// Read instruction -> go trough microinstructions -> start over
-			let instruction = this.instructionRegister.getVal()
-			if (DEBUG) console.log('#', this.instructionCounter.counter.toString(16).padStart(4, '0'), instruction.toString(16).padStart(2, '0'))
-			for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
-				let romAddress = (instruction << MINST_COUNTER_LENGTH) + i
-				let romVal = this.rom.get(romAddress)
-				if (romVal === 0) break // break out of the loop if no microcode
-				let mcodes = ''
-				if ((romVal & HLT) !== 0) {
-					this.HLT()
-					mcodes += 'HLT '
-				}
-				if ((romVal & ICA) !== 0) {
-					this.ICA()
-					mcodes += 'ICA '
-				}
-				if ((romVal & ICO1) !== 0) {
-					this.ICO1()
-					mcodes += 'ICO1 '
-				}
-				if ((romVal & ICO2) !== 0) {
-					this.ICO2()
-					mcodes += 'ICO2 '
-				}
-				if ((romVal & ICI1) !== 0) {
-					this.ICI1()
-					mcodes += 'ICI1 '
-				}
-				if ((romVal & ICI2) !== 0) {
-					this.ICI2()
-					mcodes += 'ICI2 '
-				}
+	async run() {
+		try {
+			while (!this.haltFlag) {
+				// Read instruction -> go trough microinstructions -> start over
+				let instruction = this.instructionRegister.getVal()
+				if (DEBUG) console.log('#', this.instructionCounter.counter.toString(16).padStart(4, '0'), instruction.toString(16).padStart(2, '0'))
+				for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
+					let romAddress = (instruction << MINST_COUNTER_LENGTH) + i
+					let romVal = this.rom.get(romAddress)
+					if (romVal === 0) break // break out of the loop if no microcode
+					let mcodes = ''
+					//#region Check microinstructions
+					if ((romVal & HLT) !== 0) {
+						this.HLT()
+						mcodes += 'HLT '
+					}
+					if ((romVal & ICA) !== 0) {
+						this.ICA()
+						mcodes += 'ICA '
+					}
+					if ((romVal & ICO1) !== 0) {
+						this.ICO1()
+						mcodes += 'ICO1 '
+					}
+					if ((romVal & ICO2) !== 0) {
+						this.ICO2()
+						mcodes += 'ICO2 '
+					}
+					if ((romVal & ICI1) !== 0) {
+						this.ICI1()
+						mcodes += 'ICI1 '
+					}
+					if ((romVal & ICI2) !== 0) {
+						this.ICI2()
+						mcodes += 'ICI2 '
+					}
 
-				if ((romVal & A1I) !== 0) {
-					this.A1I()
-					mcodes += 'A1I '
-				}
-				if ((romVal & A2I) !== 0) {
-					this.A2I()
-					mcodes += 'A2I '
-				}
+					if ((romVal & A1I) !== 0) {
+						this.A1I()
+						mcodes += 'A1I '
+					}
+					if ((romVal & A2I) !== 0) {
+						this.A2I()
+						mcodes += 'A2I '
+					}
 
-				if ((romVal & DAI) !== 0) {
-					this.DAI()
-					mcodes += 'DAI '
-				}
-				if ((romVal & DAO) !== 0) {
-					this.DAO()
-					mcodes += 'DAO '
-				}
+					if ((romVal & DAI) !== 0) {
+						this.DAI()
+						mcodes += 'DAI '
+					}
+					if ((romVal & DAO) !== 0) {
+						this.DAO()
+						mcodes += 'DAO '
+					}
 
-				if ((romVal & IRI) !== 0) {
-					this.IRI()
-					mcodes += 'IRI '
-				}
+					if ((romVal & IRI) !== 0) {
+						this.IRI()
+						mcodes += 'IRI '
+					}
 
-				if ((romVal & R1I) !== 0) {
-					this.R1I()
-					mcodes += 'R1I '
-				}
-				if ((romVal & R1O) !== 0) {
-					this.R1O()
-					mcodes += 'R1O '
-				}
+					if ((romVal & R1I) !== 0) {
+						this.R1I()
+						mcodes += 'R1I '
+					}
+					if ((romVal & R1O) !== 0) {
+						this.R1O()
+						mcodes += 'R1O '
+					}
 
-				if ((romVal & R2I) !== 0) {
-					this.R2I()
-					mcodes += 'R2I '
-				}
-				if ((romVal & R2O) !== 0) {
-					this.R2O()
-					mcodes += 'R2O '
-				}
+					if ((romVal & R2I) !== 0) {
+						this.R2I()
+						mcodes += 'R2I '
+					}
+					if ((romVal & R2O) !== 0) {
+						this.R2O()
+						mcodes += 'R2O '
+					}
 
-				if ((romVal & ACI) !== 0) {
-					this.ACI()
-					mcodes += 'ACI '
+					if ((romVal & ACI) !== 0) {
+						this.ACI()
+						mcodes += 'ACI '
+					}
+					if ((romVal & ACO) !== 0) {
+						this.ACO()
+						mcodes += 'ACO '
+					}
+					if ((romVal & ADD) !== 0) {
+						this.ADD()
+						mcodes += 'ADD '
+					}
+					//#endregion Check microinstructions
+					if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
+					this.bus.cycle()
 				}
-				if ((romVal & ACO) !== 0) {
-					this.ACO()
-					mcodes += 'ACO '
-				}
-				if ((romVal & ADD) !== 0) {
-					this.ADD()
-					mcodes += 'ADD '
-				}
-				if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
-				this.bus.cycle()
 			}
-			/* if(j==4){
-			console.log('j broke')
-			break
-		  }
-		  j++ */
+		} catch (e) {
+			console.error('\x1b[31mCPU Error:',e,'\x1b[0m')
 		}
 	}
 }
