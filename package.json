@@ -11,7 +11,8 @@
     "build:ram": "npm run build && node dist/ram.js",
     "lint": "ts-node scripts/lint.ts 'src/*'",
     "lint:fix": "ts-node scripts/lint.ts --fix 'src/*'",
-    "test": "npm run build && npm run lint"
+    "pretest": "npm run build",
+    "test": "npm run lint"
   },
   "keywords": [
     "cpu",
