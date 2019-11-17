@@ -28,6 +28,13 @@ LDA		0x03
 STA		0x04
 JMP		0x05
 JOF		0x06
+JZE		0x07
+JUF		0x08
+SUB		0x09
+CMP		0x0A
+JGT		0x0B
+JEQ		0x0C
+JST		0x0D
 */
 //MICRO INSTRUTIONS (MINST) (24bit)
 /*
@@ -84,6 +91,9 @@ export const R1O = 1 << 15
 
 export const R2I = 1 << 16
 export const R2O = 1 << 17
+
+export const SUB = 1 << 18
+export const CMP = 1 << 19
 
 export type Microcode = number[]
 
@@ -232,5 +242,121 @@ export const inst: Instructions = {
 		]),
 		flags: [FlagsRegister.OF],
 		bytesUsedByInstruction: 2
-	}
+	},
+	JZE: {
+		code: 0x07,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.ZE],
+		bytesUsedByInstruction: 2
+	},
+	JUF: {
+		code: 0x08,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.UF],
+		bytesUsedByInstruction: 2
+	},
+	SUB: {
+		code: 0x09,
+		microcode: LOADER.concat([
+			// Get argument routine
+			DAO | R1I, // Get next value (Instruction counter already advanced & ram address saved) & store it in the register
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+			// End routine
+			DAO | SUB,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		])
+	},
+	CMP: {
+		code: 0x0A,
+		microcode: LOADER.concat([
+			// Get argument routine
+			DAO | R1I, // Get next value (Instruction counter already advanced & ram address saved) & store it in the register
+			ICO1 | A1I, // Get next value
+			ICO2 | A2I,
+			DAO | A2I | ICA, // Set address 2
+			R1O | A1I, // set register to address 1
+			// End routine
+			DAO | CMP,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		])
+	},
+	JGT: {
+		code: 0x0B,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.GT],
+		bytesUsedByInstruction: 2
+	},
+	JEQ: {
+		code: 0x0C,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.EQ],
+		bytesUsedByInstruction: 2
+	},
+	JST: {
+		code: 0x0D,
+		microcode: LOADER.concat([
+			DAO | ICI1,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			DAO | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.ST],
+		bytesUsedByInstruction: 2
+	},
 }

@@ -1,6 +1,6 @@
 import { Memory, CustomMemory } from './components/memory'
 import { ConsoleIO, IO } from './components/io'
-import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD, FLAGS_LENGTH } from './@types/instructions'
+import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD, FLAGS_LENGTH, SUB, CMP } from './@types/instructions'
 import { AddressSelector, Bus_AddressSelector_Interface } from './components/addressSelector' // eslint-disable-line @typescript-eslint/camelcase
 import { Bus } from './components/bus'
 import { BusRegister } from './components/busRegister'
@@ -156,6 +156,14 @@ export class CPU {
 		this.alu.add()
 	}
 
+	private SUB () {
+		this.alu.sub()
+	}
+
+	private CMP () {
+		this.alu.cmp()
+	}
+
 	/* eslint-enable @typescript-eslint/camelcase */
 	// #endregion Microinstructions
 
@@ -249,12 +257,19 @@ export class CPU {
 						this.ADD()
 						mcodes += 'ADD '
 					}
+					if ((romVal & SUB) !== 0) {
+						this.SUB()
+						mcodes += 'SUB '
+					}
+					if ((romVal & CMP) !== 0) {
+						this.CMP()
+						mcodes += 'CMP '
+					}
 					// #endregion Check microinstructions
 					if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
 					this.bus.cycle()
 				}
 				// console.log(this.flags.getVal().toString(2))
-				this.flags.cycle()
 			}
 		} catch (e) {
 			console.error('\x1b[31mCPU Error:', e, '\x1b[0m')

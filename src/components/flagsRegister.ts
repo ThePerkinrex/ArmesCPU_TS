@@ -11,9 +11,6 @@ export class FlagsRegister {
 
 	private val = 0
 
-	private lastLoop = 0
-	private thisLoop = 0
-
 	public getVal(): number {
 		return this.val
 	}
@@ -23,12 +20,9 @@ export class FlagsRegister {
 			throw new Error('Flag too big: ' + flag.toString(2))
 		}
 		this.val |= flag
-		this.thisLoop |= flag
 	}
 
-	public cycle() {
-		this.val &= ~this.lastLoop // Clear lastLoop's bits
-
-		this.lastLoop = this.thisLoop
+	public clearFlags(flag: number) {
+		this.val &= ((~flag) & (Math.pow(2, FlagsRegister.flagNumber)-1))
 	}
 }
