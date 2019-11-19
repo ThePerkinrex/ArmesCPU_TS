@@ -24,6 +24,7 @@ export function compileAssembly (asm: string): Memory {
 
 	const instructionRegex = /(:\w+ )?(([A-Z]+)(?: ([^; ]+))*)( *;.*)?/
 	const variableDefineRegex = /#(\w+)/
+	const variableDefineSetRegex = /#(\w+)\s*=\s*(\d+|(?:0x\d+))/
 	const labelRegex = /@\w+/
 	const variableRegex = /#\w+/
 
@@ -46,11 +47,15 @@ export function compileAssembly (asm: string): Memory {
 					address++
 					code[address] = num & 255
 				} else if (labelRegex.test(arg)) {
-					num = labels[arg.slice(1)]
+					if(labels[arg.slice(1)] !== undefined){
+						num = labels[arg.slice(1)]
 
-					code[address] = num >> 8
-					address++
-					code[address] = num & 255
+						code[address] = num >> 8
+						address++
+						code[address] = num & 255
+					}else{
+						// TODO go forward and get where the address will be
+					}
 				} else if (variableRegex.test(arg)) {
 					num = variables[arg.slice(1)]
 
@@ -60,6 +65,14 @@ export function compileAssembly (asm: string): Memory {
 				}
 				address++
 			}
+			continue
+		}
+
+		let defineSetMatch = line.match(variableDefineSetRegex)
+		if (defineSetMatch && defineSetMatch.length > 1) {
+			variables[defineSetMatch[1]] = variableAddress
+			code[variableAddress] = parseInt(defineSetMatch[2])
+			variableAddress--
 			continue
 		}
 

@@ -3,6 +3,7 @@ import 'source-map-support/register'
 import { Memory } from './components/memory'
 import { createBinFile } from './utils/bin'
 import { inst as i } from './@types/instructions'
+import { compileAssembly } from './asm'
 
 console.log('\n> Building RAM...')
 
@@ -30,6 +31,22 @@ STA 0x8010
 JMP @loop
 
 */
+
+let asm = `
+#x = 1
+#y = 0
+LDA #x
+:loop STA #y
+ADD #x
+MOV #y #x
+STA 0x8010
+JOF @halt
+JMP @loop
+:halt HALT
+`
+
+let compiled = compileAssembly(asm)
+compiled.hexdump()
 
 let code: {[address: number]: number} = {
 	0x0000: i.LDA.code, // LDA
