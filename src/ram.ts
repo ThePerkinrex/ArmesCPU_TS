@@ -45,9 +45,30 @@ JMP @loop
 :halt HALT
 `
 
-let compiled = compileAssembly(asm)
-compiled.hexdump()
+asm = `
+#x = 10
+#y = 1
+#eq = 14 ; 0xE
+#gt = 10 ; 0xA
+#st = 15 ; 0xF
+LDA #x
+CMP #y
+JEQ @eq
+JGT @gt
+JST @st
+:eq MOV #eq 0x8010
+JMP @halt
+:gt MOV #gt 0x8011
+JMP @halt
+:st MOV #st 0x8012
+:halt HALT
+`
 
+let compiled = compileAssembly(asm)
+// console.log(compiled.get(0x7FFF))
+// compiled.hexdump()
+
+/*
 let code: {[address: number]: number} = {
 	0x0000: i.LDA.code, // LDA
 	0x0001: 0x7F,
@@ -81,7 +102,9 @@ let code: {[address: number]: number} = {
 
 for (let address in code) {
 	ram.set(parseInt(address), code[address])
-}
+} */
+
+ram = compiled
 
 ram.hexdump()
 

@@ -101,7 +101,7 @@ export interface Instruction {
 	code: number,
 	microcode: Microcode,
 	flags?: number[],
-	bytesUsedByInstruction?: number
+	bytesUsedByInstruction: number
 }
 
 export interface Instructions {
@@ -122,11 +122,13 @@ export function createIgnoreMicrocode(bytes: number): Microcode {
 export const inst: Instructions = {
 	NOP: {
 		code: 0x00,
-		microcode: LOADER
+		microcode: LOADER,
+		bytesUsedByInstruction: 0
 	},
 	HALT: {
 		code: 0xFF,
-		microcode: LOADER.concat([HLT])
+		microcode: LOADER.concat([HLT]),
+		bytesUsedByInstruction: 0
 	},
 	MOV: {
 		code: 0x02,
@@ -155,7 +157,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 4
 	},
 	ADD: {
 		code: 0x01,
@@ -173,7 +176,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 2
 	},
 	LDA: {
 		code: 0x03,
@@ -192,7 +196,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 2
 	},
 	STA: {
 		code: 0x04,
@@ -211,7 +216,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 2
 	},
 	JMP: {
 		code: 0x05,
@@ -225,7 +231,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 2
 	},
 	JOF: {
 		code: 0x06,
@@ -291,7 +298,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 2
 	},
 	CMP: {
 		code: 0x0A,
@@ -309,7 +317,8 @@ export const inst: Instructions = {
 			ICO1 | A1I,
 			ICO2 | A2I,
 			ICA | DAO | IRI
-		])
+		]),
+		bytesUsedByInstruction: 2
 	},
 	JGT: {
 		code: 0x0B,
