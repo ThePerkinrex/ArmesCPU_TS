@@ -1,5 +1,5 @@
 import path from 'path'
-import { spawnSync } from 'child_process'
+import { sync as spawnSync } from 'cross-spawn'
 import { Logger, deleteFolder, colors } from './utils'
 
 let exitCode = 0
