@@ -23,9 +23,11 @@ export function compileAssembly (asm: string): Memory {
 
 	const instructionRegex = /^(:\w+ )?(([A-Z]+)(?: ([^; ]+))*)( *;.*)?$/
 	const variableDefineRegex = /#(\w+)/
-	const variableDefineSetRegex = /#(\w+)\s*=\s*(\d+|(?:0x\d+))/
+	const variableDefineSetRegex = /#(\w+)\s*=\s*((?:0x\d+)|\d+|'.')/
+	const labelDefineRegex = /:(\w+)\s*=\s*((?:0x\d+)|\d+)/
 	const labelRegex = /@\w+/
 	const variableRegex = /#\w+/
+	const charRegex = /'.'/
 
 	let lines = asm.split('\n')
 
@@ -44,10 +46,25 @@ export function compileAssembly (asm: string): Memory {
 			continue
 		}
 
+		let labelDefineMatch = line.match(labelDefineRegex)
+		if (labelDefineMatch && labelDefineMatch.length > 1) {
+			labels[labelDefineMatch[1]] = parseInt(labelDefineMatch[2])
+			// console.log(labels, labelDefineMatch[1])
+
+			console.log(`(${labelDefineMatch[1]})`, labels[labelDefineMatch[1]], `(${labelDefineMatch[2]})`)
+		}
+
 		let defineSetMatch = line.match(variableDefineSetRegex)
 		if (defineSetMatch && defineSetMatch.length > 1) {
 			variables[defineSetMatch[1]] = variableAddress
-			code[variableAddress] = parseInt(defineSetMatch[2])
+
+			if (charRegex.test(defineSetMatch[2])) {
+				code[variableAddress] = defineSetMatch[2].replace('\'', '').charCodeAt(0) & 0xFF
+			}else{
+				code[variableAddress] = parseInt(defineSetMatch[2])
+			}
+			
+			console.log(`(${defineSetMatch[1]})`,variableAddress.toString(16), '=', code[variableAddress], `(${defineSetMatch[2]})`)
 			variableAddress--
 			continue
 		}
@@ -60,6 +77,7 @@ export function compileAssembly (asm: string): Memory {
 		}
 	}
 
+	// console.log(labels)
 	address = 0
 	for (let line of lines) {
 		let instMatch = line.match(instructionRegex)

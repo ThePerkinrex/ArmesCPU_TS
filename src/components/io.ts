@@ -26,10 +26,13 @@ export class IO implements AddressableComponent {
 	}
 }
 
-export class ConsoleIO extends IO {
+export class ConsoleIO extends IO { //  Address 0 normal IO
 	set(address: number, data: number) {
-		super.set(address, data)
-		console.log(`OUT[${address.toString(16).toUpperCase().padStart((Math.pow(2, this.addressBits)-1).toString(16).length, '0')}]: ${data.toString(16).toUpperCase().padStart(2, '0')} | ${data.toString(10).padStart((Math.pow(2, this.addressBits)-1).toString(10).length, '0')} | ${String.fromCharCode(data)}`)
+		if (address == 0) {
+			process.stdout.write(String.fromCharCode(data))
+		}else{
+			console.log(`OUT[${address.toString(16).toUpperCase().padStart((Math.pow(2, this.addressBits)-1).toString(16).length, '0')}]: ${data.toString(16).toUpperCase().padStart(2, '0')} | ${data.toString(10).padStart((Math.pow(2, this.addressBits)-1).toString(10).length, '0')} | ${String.fromCharCode(data)}`)
+		}
 	}
 }
 
