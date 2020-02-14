@@ -59,13 +59,13 @@ function createROM (inst: Instructions): CustomMemory {
 
 const rom = createROM(inst)
 
-//console.log(rom.get(0))
-//rom.hexdump()
+// console.log(rom.get(0))
+// rom.hexdump()
 
 for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
 	let v = rom.get((0x0e << MINST_COUNTER_LENGTH | i) << FLAGS_LENGTH | 0)
-		if(v == 0) break
-		console.log(v)
+	if (v === 0) break
+	console.log(v)
 }
 
 createBinFile(rom, 'rom')

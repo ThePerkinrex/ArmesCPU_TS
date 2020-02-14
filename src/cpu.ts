@@ -188,9 +188,8 @@ export class CPU {
 				// Read instruction -> go trough microinstructions -> start over
 				let instruction = this.instructionRegister.getVal()
 				if (DEBUG) console.log('#', this.instructionCounter.counter.toString(16).padStart(4, '0'), instruction.toString(16).padStart(2, '0'))
-				if(this.instructionRegister.getVal() == 0x0E) console.log('CALL')
+				if (this.instructionRegister.getVal() === 0x0E) console.log('CALL')
 				for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
-					
 					let romAddress = (((instruction << MINST_COUNTER_LENGTH) + i) << FLAGS_LENGTH) + this.flags.getVal()
 					let romVal = this.rom.get(romAddress)
 					console.log(POP, romVal, POP & romVal)
@@ -286,14 +285,12 @@ export class CPU {
 					if ((romVal & PSH) !== 0) {
 						this.PSH()
 						mcodes += 'PSH '
-						console.log('PSH');
-						
+						console.log('PSH')
 					}
 					if ((romVal & POP) !== 0) {
 						this.POP()
 						mcodes += 'POP '
-						console.log('POP');
-						
+						console.log('POP')
 					}
 					console.log(mcodes)
 					// #endregion Check microinstructions

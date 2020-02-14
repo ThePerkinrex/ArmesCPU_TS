@@ -60,11 +60,11 @@ export function compileAssembly (asm: string): Memory {
 
 			if (charRegex.test(defineSetMatch[2])) {
 				code[variableAddress] = defineSetMatch[2].replace('\'', '').charCodeAt(0) & 0xFF
-			}else{
+			} else {
 				code[variableAddress] = parseInt(defineSetMatch[2])
 			}
-			
-			console.log(`(${defineSetMatch[1]})`,variableAddress.toString(16), '=', code[variableAddress], `(${defineSetMatch[2]})`)
+
+			console.log(`(${defineSetMatch[1]})`, variableAddress.toString(16), '=', code[variableAddress], `(${defineSetMatch[2]})`)
 			variableAddress--
 			continue
 		}

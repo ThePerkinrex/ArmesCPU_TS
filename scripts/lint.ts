@@ -5,7 +5,7 @@ let exitCode = 0
 
 // Limt source code
 const buildLogger = new Logger('Linting')
-const eslint = spawnSync('npx', ['eslint', ...process.argv], { encoding: 'utf8' })
+const eslint = spawnSync('npx', ['eslint', "--ignore-pattern 'node_modules/*'", ...process.argv], { encoding: 'utf8' })
 
 const output = eslint.stdout.split('\n')
 
