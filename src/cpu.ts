@@ -1,12 +1,13 @@
 import { Memory, CustomMemory } from './components/memory'
 import { ConsoleIO, IO } from './components/io'
-import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD, FLAGS_LENGTH, SUB, CMP } from './@types/instructions'
+import { MINST_LENGTH, MINST_COUNTER_LENGTH, INST_LENGHT, HLT, ICA, ICO1, ICO2, ICI2, ICI1, A1I, A2I, DAI, DAO, IRI, R1I, R1O, R2I, R2O, ACI, ACO, ADD, FLAGS_LENGTH, SUB, CMP, PSH, POP } from './@types/instructions'
 import { AddressSelector, Bus_AddressSelector_Interface } from './components/addressSelector' // eslint-disable-line @typescript-eslint/camelcase
 import { Bus } from './components/bus'
 import { BusRegister } from './components/busRegister'
 import { InstructionCounter, Bus_InstructionCounter_Interface } from './components/instructionCounter' // eslint-disable-line @typescript-eslint/camelcase
 import { ALU } from './components/alu'
 import { FlagsRegister } from './components/flagsRegister'
+import { Stack } from './components/stack'
 
 // BIG ENDIAN SYSTEM
 
@@ -52,6 +53,8 @@ export class CPU {
 
 	private alu = new ALU(this.accumulator, this.flags)
 
+	private stack = new Stack()
+
 	private bus = new Bus()
 
 	constructor (ram: Buffer, rom: Buffer, io = new ConsoleIO(4)) {
@@ -77,6 +80,8 @@ export class CPU {
 
 		this.bus.addBusIO(this.accumulator)
 		this.bus.addBusIO(this.alu)
+
+		this.bus.addBusIO(this.stack)
 	}
 
 	public haltFlag = false
@@ -164,6 +169,16 @@ export class CPU {
 		this.alu.cmp()
 	}
 
+	private PSH () {
+		this.stack.fromBus()
+		console.log('PSH')
+	}
+
+	private POP () {
+		this.stack.ontoBus()
+		console.log('POP')
+	}
+
 	/* eslint-enable @typescript-eslint/camelcase */
 	// #endregion Microinstructions
 
@@ -173,9 +188,12 @@ export class CPU {
 				// Read instruction -> go trough microinstructions -> start over
 				let instruction = this.instructionRegister.getVal()
 				if (DEBUG) console.log('#', this.instructionCounter.counter.toString(16).padStart(4, '0'), instruction.toString(16).padStart(2, '0'))
+				if(this.instructionRegister.getVal() == 0x0E) console.log('CALL')
 				for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
+					
 					let romAddress = (((instruction << MINST_COUNTER_LENGTH) + i) << FLAGS_LENGTH) + this.flags.getVal()
 					let romVal = this.rom.get(romAddress)
+					console.log(POP, romVal, POP & romVal)
 					if (romVal === 0) break // break out of the loop if no microcode
 					let mcodes = ''
 					// #region Check microinstructions
@@ -265,6 +283,19 @@ export class CPU {
 						this.CMP()
 						mcodes += 'CMP '
 					}
+					if ((romVal & PSH) !== 0) {
+						this.PSH()
+						mcodes += 'PSH '
+						console.log('PSH');
+						
+					}
+					if ((romVal & POP) !== 0) {
+						this.POP()
+						mcodes += 'POP '
+						console.log('POP');
+						
+					}
+					console.log(mcodes)
 					// #endregion Check microinstructions
 					if (DEBUG) console.log('-', romVal.toString(2).padStart(MINST_LENGTH, '0'), romVal.toString(16), mcodes)
 					this.bus.cycle()

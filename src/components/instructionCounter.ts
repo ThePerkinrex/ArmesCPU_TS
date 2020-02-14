@@ -1,4 +1,4 @@
-import { BusIOInterface } from './bus'
+import { BusIOInterface, DefaultBusInterface } from './bus'
 
 export class InstructionCounter {
 	public counter = 0
@@ -27,38 +27,6 @@ export class InstructionCounter {
 	setCounter2(n: number) {
 		this.counter = (n & 0xFF) + (this.counter & 0xFF00)
 	}
-}
-
-abstract class DefaultBusInterface implements BusIOInterface {
-	private ontoBusBool: boolean
-	private fromBusBool: boolean
-
-	abstract getVal(): number
-
-	abstract setVal(n: number): void
-
-	cycle() {
-		this.ontoBusBool = false
-		this.fromBusBool = false
-	}
-
-	ontoBus(): void {
-		this.ontoBusBool = true
-	}
-
-	fromBus(): void {
-		this.fromBusBool = true
-	}
-
-	isOntoBus(): boolean {
-		return this.ontoBusBool
-	}
-
-	isFromBus(): boolean {
-		return this.fromBusBool
-	}
-
-
 }
 
 export class Bus_InstructionCounter_Interface {

@@ -15,9 +15,7 @@
 LDA #x
 :loop STA #y
 ADD #x
-JOF @overflowCALL
-JMP @retOverflow
-:overflowCALL CALL @overflow
+JOF @overflow
 :retOverflow MOV #y #x
 STA @IOPORT
 STA #accumulator
@@ -37,4 +35,4 @@ HALT
 LDA #o
 STA @DEBUGPORT
 LDA #accumulator
-RET
+JMP @retOverflow

@@ -35,6 +35,8 @@ CMP		0x0A
 JGT		0x0B
 JEQ		0x0C
 JST		0x0D
+CALL	0x0E
+RET		0x0F
 */
 //MICRO INSTRUTIONS (MINST) (24bit)
 /*
@@ -63,6 +65,12 @@ JST		0x0D
 
 16 - R2I Register 2 In
 17 - R2O Register 2 Out
+
+18 - SUB Substract
+19 - CMP Compare & set flags
+
+20 - PSH Push address onto the stack
+21 - POP Pop address from the stack
 */
 
 
@@ -94,6 +102,9 @@ export const R2O = 1 << 17
 
 export const SUB = 1 << 18
 export const CMP = 1 << 19
+
+export const PSH = 1 << 20
+export const POP = 1 << 21
 
 export type Microcode = number[]
 
@@ -367,5 +378,40 @@ export const inst: Instructions = {
 		]),
 		flags: [FlagsRegister.ST],
 		bytesUsedByInstruction: 2
+	},
+	CALL: {
+		code: 0x0E,
+		microcode: LOADER.concat([
+			DAO | R1I,
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | R2I,
+
+			ICO1 | PSH,
+			ICO2 | PSH,
+
+			R1O | ICI1,
+			R2O | ICI2,
+
+			// Setup for next instrcution
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.ST],
+		bytesUsedByInstruction: 2
+	},
+	RET: {
+		code: 0x0F,
+		microcode: LOADER.concat([
+			POP | ICI2,
+			POP | ICI1,
+
+			ICO1 | A1I,
+			ICO2 | A2I,
+			ICA | DAO | IRI
+		]),
+		flags: [FlagsRegister.ST],
+		bytesUsedByInstruction: 0
 	},
 }

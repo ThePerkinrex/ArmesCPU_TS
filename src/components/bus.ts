@@ -42,3 +42,35 @@ export class Bus {
 		}
 	}
 }
+
+export abstract class DefaultBusInterface implements BusIOInterface {
+	private ontoBusBool: boolean
+	private fromBusBool: boolean
+
+	abstract getVal(): number
+
+	abstract setVal(n: number): void
+
+	cycle() {
+		this.ontoBusBool = false
+		this.fromBusBool = false
+	}
+
+	ontoBus(): void {
+		this.ontoBusBool = true
+	}
+
+	fromBus(): void {
+		this.fromBusBool = true
+	}
+
+	isOntoBus(): boolean {
+		return this.ontoBusBool
+	}
+
+	isFromBus(): boolean {
+		return this.fromBusBool
+	}
+
+
+}

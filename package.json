@@ -4,7 +4,8 @@
   "description": "A cpu emulator written in TS",
   "main": "dist/node.js",
   "scripts": {
-    "start": "node .",
+    "cpu": "node .",
+    "start": "npm run cpu",
     "prestart": "npm run build",
     "build": "ts-node scripts/build.ts",
     "build:rom": "npm run build && node dist/rom.js",

@@ -43,7 +43,7 @@ function createROM (inst: Instructions): CustomMemory {
 	for (let instructionName in inst) {
 		let object = inst[instructionName]
 		let ignoreMicrocode = createIgnoreMicrocode(object.bytesUsedByInstruction || 0)
-		console.log(instructionName, '0x' + object.code.toString(16).toUpperCase())
+		console.log(instructionName, '0x' + object.code.toString(16).toUpperCase(), object.microcode)
 		for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
 			for (let flag of posibleFlagCombinations(object.flags || [0])) {
 				rom.set((object.code << MINST_COUNTER_LENGTH | i) << FLAGS_LENGTH | flag, object.microcode[i] || 0)
@@ -59,7 +59,13 @@ function createROM (inst: Instructions): CustomMemory {
 
 const rom = createROM(inst)
 
-console.log(rom.get(0))
-rom.hexdump()
+//console.log(rom.get(0))
+//rom.hexdump()
+
+for (let i = 0; i < Math.pow(2, MINST_COUNTER_LENGTH); i++) {
+	let v = rom.get((0x0e << MINST_COUNTER_LENGTH | i) << FLAGS_LENGTH | 0)
+		if(v == 0) break
+		console.log(v)
+}
 
 createBinFile(rom, 'rom')
